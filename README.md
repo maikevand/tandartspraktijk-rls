@@ -158,12 +158,17 @@ Lever de volgende onderdelen in:
 
 *In te vullen. De eerste rij is een voorbeeld.*
 
-| Rol | Tabel | Lezen | Toevoegen | Wijzigen | Verwijderen |
-|---|---|---|---|---|---|
-| Bezoeker (niet ingelogd) | `behandelingen` | alle rijen | – | – | – |
-| Tandarts | `reserveringen` | | | | |
-| Receptionist | `reserveringen` | | | | |
-| … | … | | | | |
+| Rol                      | Tabel             | Lezen        | Toevoegen    | Wijzigen     | Verwijderen  |
+|--------------------------|-------------------|--------------|--------------|--------------|--------------|
+| Bezoeker (niet ingelogd) | `behandelingen`   | alle rijen   | –            | –            | –            |
+| Tandarts                 | `reserveringen`   | van zichzelf | -            | -            | -            |
+| Receptionist             | `reserveringen`   | alle rijen   | alle rijen   | alle rijen   | alle rijen   |
+| Tandarts                 | `beschikbaarheid` | van zichzelf | van zichzelf | van zichzelf | van zichzelf |
+| Receptionist             | `beschikbaarheid` | alle rijen   | alle rijen   | alle rijen   | alle rijen   |
+| Tandarts                 | `behandelingen`   | alle rijen   | -            | -            | -            |
+| Receptionist             | `behandelingen`   | alle rijen   | alle rijen   | alle rijen   | alle rijen   |
+| Tandarts                 | `arts`            | van zichzelf | -            | van zichzelf | -            |
+| Receptionist             | `arts`            | alle rijen   | alle rijen   | alle rijen   | alle rijen   |
 
 **Hoe sla ik de rollen op, en waarom zo?**
 
