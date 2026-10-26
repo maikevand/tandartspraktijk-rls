@@ -1,10 +1,12 @@
-create table public.receptionist (
-    id bigint generated always as identity primary key,
-    naam text not null,
+create table public.receptionist
+(
+    id      bigint generated always as identity primary key,
+    naam    text not null,
     user_id uuid unique references auth.users (id) on delete cascade
 );
 
-create or replace function public.maak_arts_voor_nieuwe_gebruiker()
+create
+or replace function public.maak_arts_voor_nieuwe_gebruiker()
 returns trigger
 language plpgsql
 security definer
@@ -15,21 +17,24 @@ return new;
 end;
 $$;
 
-create or replace function public.heeft_rol(rol text)
+create
+or replace function public.heeft_rol(rol text)
 returns boolean
 language plpgsql
 security definer
 set search_path = ''
 as $$
 begin
-if rol = 'receptionist' then
+if
+rol = 'receptionist' then
     return exists (
         select 1
         from public.receptionist
         where user_id = (select auth.uid())
     );
 end if;
-if rol = 'tandarts' then
+if
+rol = 'tandarts' then
     return exists (
         select 1
         from public.arts

@@ -32,7 +32,8 @@ create index arts_user_id_idx on public.arts (user_id);
 -- SECURITY DEFINER: de functie draait met de rechten van haar eigenaar, niet
 -- met die van de nieuwe gebruiker. Zo blijft de trigger werken als jij straks
 -- met RLS dichtzet wie er in `arts` mag schrijven.
-create or replace function public.maak_arts_voor_nieuwe_gebruiker()
+create
+or replace function public.maak_arts_voor_nieuwe_gebruiker()
 returns trigger
 language plpgsql
 security definer
@@ -44,7 +45,8 @@ end;
 $$;
 
 create trigger maak_arts_na_registratie
-    after insert on auth.users
+    after insert
+    on auth.users
     for each row execute function public.maak_arts_voor_nieuwe_gebruiker();
 
 -- De trigger-functie hoeft door niemand rechtstreeks aangeroepen te worden.
@@ -64,5 +66,13 @@ revoke execute on function public.maak_arts_voor_nieuwe_gebruiker() from public,
 alter function public.beschikbare_tijden(text, date, integer) security definer;
 alter function public.boek_afspraak(text, date, time, text, text) security definer;
 
-grant execute on function public.beschikbare_tijden(text, date, integer) to anon, authenticated;
-grant execute on function public.boek_afspraak(text, date, time, text, text) to anon, authenticated;
+grant
+execute
+on
+function
+public
+.
+beschikbare_tijden
+(text, date, integer) to anon, authenticated;
+grant execute on function public.boek_afspraak
+(text, date, time, text, text) to anon, authenticated;

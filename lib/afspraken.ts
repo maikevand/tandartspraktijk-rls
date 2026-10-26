@@ -44,9 +44,17 @@ export class OnbekendeBehandelingError extends Error {
     }
 }
 
+export class NietGeautoriseerd extends Error {
+    constructor() {
+        super("U bent niet gemachtigd.");
+        this.name = "NietGeautoriseerd";
+    }
+}
+
 // Postgres-foutcodes uit boek_afspraak()
 const PG_EXCLUSION_VIOLATION = "23P01";
 const PG_NO_DATA_FOUND = "P0002";
+const PG_INSUFFICIENT_PRIVILEGE = "42501";
 
 export async function getBeschikbareTijden(behandeling: string, datum: string): Promise<string[]> {
     const {data, error} = await getSupabasePublic().rpc("beschikbare_tijden", {
@@ -79,6 +87,9 @@ export async function boekAfspraak(afspraak: NieuweAfspraak): Promise<GeboekteAf
         }
         if (error.code === PG_NO_DATA_FOUND) {
             throw new OnbekendeBehandelingError(afspraak.behandeling);
+        }
+        if (error.code === PG_INSUFFICIENT_PRIVILEGE) {
+            throw new NietGeautoriseerd();
         }
         throw new Error("Afspraak boeken mislukt", {cause: error});
     }

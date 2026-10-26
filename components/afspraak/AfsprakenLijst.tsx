@@ -24,7 +24,9 @@ export default function AfsprakenLijst({titel, afspraken, leegTekst, nieuwsteEer
             ) : (
                 dagen.map(([datum, afsprakenOpDag]) => (
                     <article key={datum} className="card afspraken-dag">
-                        <h3><time dateTime={datum}>{formatDatumLang(datum)}</time></h3>
+                        <h3>
+                            <time dateTime={datum}>{formatDatumLang(datum)}</time>
+                        </h3>
                         <ul className="afspraken-lijst">
                             {afsprakenOpDag.map((afspraak) => (
                                 <li key={afspraak.id}>

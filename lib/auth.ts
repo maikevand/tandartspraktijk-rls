@@ -23,7 +23,7 @@ export type Receptionist = {
  */
 export const getIngelogdeArts = cache(async (): Promise<Arts | null> => {
     const supabase = await createSupabaseServerClient();
-    const { data, error } = await supabase.auth.getUser();
+    const {data, error} = await supabase.auth.getUser();
 
     if (error || !data.user) {
         return null
@@ -43,7 +43,6 @@ export const getIngelogdeArts = cache(async (): Promise<Arts | null> => {
 });
 
 
-
 /** Voor pagina's achter de login: stuurt door naar /inloggen als er niemand is ingelogd. */
 export async function vereisIngelogdeArts(): Promise<Arts> {
     const arts = await getIngelogdeArts();
@@ -53,9 +52,9 @@ export async function vereisIngelogdeArts(): Promise<Arts> {
     return arts;
 }
 
-export const getIngelogdeReceptionist = cache(async (): Promise<Receptionist| null> => {
+export const getIngelogdeReceptionist = cache(async (): Promise<Receptionist | null> => {
     const supabase = await createSupabaseServerClient();
-    const { data, error } = await supabase.auth.getUser();
+    const {data, error} = await supabase.auth.getUser();
 
     if (error || !data.user) {
         return null

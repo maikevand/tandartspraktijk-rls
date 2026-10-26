@@ -21,7 +21,7 @@ export default async function Inloggen({searchParams}: PageProps<"/inloggen">) {
                         De bevestigingslink is ongeldig of verlopen. Log in of registreer opnieuw.
                     </p>
                 )}
-                <Login />
+                <Login/>
                 <p className="login-wissel">
                     Nog geen account? <Link href="/registreren">Registreren</Link>
                 </p>

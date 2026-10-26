@@ -193,7 +193,7 @@ Zorg dat je applicatie op een begrijpelijke manier omgaat met authenticatie- en 
 - **Onvoldoende rechten.** RLS reageert niet altijd met een foutmelding:
 
   | Actie | Wat RLS doet als het niet mag |
-    |---|---|
+        |---|---|
   | `select` | Geen fout: je krijgt alleen de rijen die je mag zien (soms een lege lijst). |
   | `insert`, of een `update` die `WITH CHECK` schendt | Fout met code `42501`: *new row violates row-level security policy*. |
   | `update` of `delete` op rijen die je niet mag zien | Geen fout: er wordt niets aangepast (0 rijen). |
@@ -213,17 +213,17 @@ Lever de volgende onderdelen in:
 
 *In te vullen. De eerste rij is een voorbeeld.*
 
-| Rol                      | Tabel             | Lezen        | Toevoegen    | Wijzigen     | Verwijderen  |
-|--------------------------|-------------------|--------------|--------------|--------------|--------------|
-| Bezoeker (niet ingelogd) | `behandelingen`   | alle rijen   | –            | –            | –            |
-| Tandarts                 | `reserveringen`   | van zichzelf | -            | -            | -            |
-| Receptionist             | `reserveringen`   | alle rijen   | alle rijen   | alle rijen   | alle rijen   |
-| Tandarts                 | `beschikbaarheid` | van zichzelf | van zichzelf | van zichzelf | van zichzelf |
-| Receptionist             | `beschikbaarheid` | alle rijen   | alle rijen   | alle rijen   | alle rijen   |
-| Tandarts                 | `behandelingen`   | alle rijen   | -            | -            | -            |
-| Receptionist             | `behandelingen`   | alle rijen   | alle rijen   | alle rijen   | alle rijen   |
-| Tandarts                 | `arts`            | van zichzelf | -            | van zichzelf | -            |
-| Receptionist             | `arts`            | alle rijen   | alle rijen   | alle rijen   | alle rijen   |
+| Regelnr. | Rol                      | Tabel             | Lezen        | Toevoegen    | Wijzigen     | Verwijderen  |
+|----------|--------------------------|-------------------|--------------|--------------|--------------|--------------|
+| 1.       | Bezoeker (niet ingelogd) | `behandelingen`   | alle rijen   | –            | –            | –            |
+| 2.       | Tandarts                 | `reserveringen`   | van zichzelf | -            | -            | -            |
+| 3.       | Receptionist             | `reserveringen`   | alle rijen   | alle rijen   | alle rijen   | alle rijen   |
+| 4.       | Tandarts                 | `beschikbaarheid` | van zichzelf | van zichzelf | van zichzelf | van zichzelf |
+| 5.       | Receptionist             | `beschikbaarheid` | alle rijen   | alle rijen   | alle rijen   | alle rijen   |
+| 6.       | Tandarts                 | `behandelingen`   | alle rijen   | -            | -            | -            |
+| 7.       | Receptionist             | `behandelingen`   | alle rijen   | alle rijen   | alle rijen   | alle rijen   |
+| 8.       | Tandarts                 | `arts`            | van zichzelf | -            | van zichzelf | -            |
+| 9.       | Receptionist             | `arts`            | alle rijen   | alle rijen   | alle rijen   | alle rijen   |
 
 **Hoe sla ik de rollen op, en waarom zo?**
 
@@ -234,7 +234,20 @@ ik eerder kiezen voor manier 1, omdat de rollen dan centraler worden opgeslagen.
 **Welke policies heb ik geschreven, en welke regel uit de tabel dwingt elke policy af?** (Verwijs naar je SQL in
 `supabase/migrations/`.)
 
-*In te vullen.*
+**Welke policies heb ik geschreven, en welke regel uit de tabel dwingt elke policy af?**
+
+Ik heb drie RLS-policies aangemaakt:
+
+1. **Gebruikers kunnen behandelingen inzien:** met `USING (true)` mogen bezoekers alle behandelingen lezen (regel 1).
+
+2. **Arts leest eigen gegevens:** met `auth.uid()` wordt gecontroleerd of de ingelogde gebruiker overeenkomt met
+   `arts.user_id` en de eigen gegevens mag inzien (regel 8).
+
+3. **Receptionist voegt extra afspraak toe:** met `WITH CHECK` en de functie `heeft_rol('receptionist')` wordt
+   gecontroleerd of de ingelogde gebruiker receptionist is. Alleen dan staat deze policy het toevoegen van een
+   reservering toe (regel 3).
+
+De SQL van deze policies en de functie `heeft_rol()` staan in `supabase/migrations/20261026150000_rollen_en_rls.sql`.
 
 ---
 
