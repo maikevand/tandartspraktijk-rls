@@ -39,13 +39,7 @@ security definer
 set search_path = ''
 as $$
 begin
-    insert into public.arts (user_id, naam, type)
-    values (
-        new.id,
-        coalesce(nullif(trim(new.raw_user_meta_data ->> 'naam'), ''), new.email),
-        coalesce(new.raw_user_meta_data ->> 'type', 'tandarts')
-    );
-    return new;
+return new;
 end;
 $$;
 

@@ -172,7 +172,7 @@ Lever de volgende onderdelen in:
 
 **Hoe sla ik de rollen op, en waarom zo?**
 
-*In te vullen.*
+*Een tabel per rol. In dit geval praktisch, omdat de artsen-tabel ook al volgens deze logica gebouwd is. Daarnaast is het aantal in te bouwen rollen nu beperkt, waardoor het geheel alsnog overzichtelijk blijft.*
 
 **Welke policies heb ik geschreven, en welke regel uit de tabel dwingt elke policy af?** (Verwijs naar je SQL in `supabase/migrations/`.)
 

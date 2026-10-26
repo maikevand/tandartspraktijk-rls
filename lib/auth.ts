@@ -10,6 +10,11 @@ export type Arts = {
     type: string;
 };
 
+export type Receptionist = {
+    id: number;
+    naam: string;
+};
+
 /**
  * Geeft de ingelogde arts terug, of `null` als er niemand is ingelogd.
  *
@@ -24,8 +29,6 @@ export const getIngelogdeArts = cache(async (): Promise<Arts | null> => {
         return null
     }
 
-    supabase.from("arts").select("id, naam, type")
-
     const artsResultaat = await supabase
         .from("arts")
         .select("id, naam, type")
@@ -39,6 +42,8 @@ export const getIngelogdeArts = cache(async (): Promise<Arts | null> => {
     return artsResultaat.data;
 });
 
+
+
 /** Voor pagina's achter de login: stuurt door naar /inloggen als er niemand is ingelogd. */
 export async function vereisIngelogdeArts(): Promise<Arts> {
     const arts = await getIngelogdeArts();
@@ -47,6 +52,26 @@ export async function vereisIngelogdeArts(): Promise<Arts> {
     }
     return arts;
 }
+
+export const getIngelogdeReceptionist = cache(async (): Promise<Receptionist| null> => {
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase.auth.getUser();
+
+    if (error || !data.user) {
+        return null
+    }
+    const receptionistResultaat = await supabase
+        .from("receptionist")
+        .select("id, naam")
+        .eq("user_id", data.user.id)
+        .maybeSingle()
+
+    if (receptionistResultaat.error || !receptionistResultaat.data) {
+        return null;
+    }
+
+    return receptionistResultaat.data;
+});
 
 /** Voor /inloggen en /registreren: wie al is ingelogd, gaat direct naar zijn afspraken. */
 export async function stuurIngelogdeArtsDoor(): Promise<void> {
