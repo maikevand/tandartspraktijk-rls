@@ -44,27 +44,36 @@ export async function registreer(
         return {status: "error", veldFouten, invoer};
     }
 
-    // TODO stap 2: registreer de gebruiker bij Supabase.
-    //  - Maak een client met createSupabaseServerClient().
-    //  - Gebruik de juiste functie van supabase.auth om een account aan te maken.
-    //  - Stuur naam en type mee als metadata (options.data). De database-trigger
-    //    maak_arts_na_registratie (zie de migratie auth_basis) maakt daarmee
-    //    automatisch de rij in `arts` aan.
-    //  - Geef ook options.emailRedirectTo mee, zodat de link in de bevestigingsmail
-    //    naar `${await siteUrl()}/auth/callback?next=/mijn-afspraken` gaat.
-    //  - Gaat het mis? Geef een foutresultaat terug; registratieFout() vertaalt
-    //    de foutcode van Supabase naar veldfouten of een melding.
-    //  - Krijg je direct een sessie terug ("Confirm email" staat uit)? Dan ben
-    //    je ingelogd: stuur de arts door naar /mijn-afspraken.
-    //  - Anders moet de arts eerst op de link in de mail klikken: geef dan
-    //    {status: "bevestig-email", email: invoer.email} terug.
-    //    Let op: bestaat het e-mailadres al, dan geeft Supabase hier bewust géén
-    //    fout (zodat niemand kan uitzoeken welke adressen een account hebben).
+    const supabase = await createSupabaseServerClient();
+    const {data, error} = await supabase.auth.signUp({
+        email: invoer.email,
+        password: wachtwoord,
+        options: {
+            data: {
+                naam: invoer.naam,
+                type: invoer.type
+            },
+            emailRedirectTo: `${await siteUrl()}/auth/callback?next=/mijn-afspraken`
+        }
+    });
+
+    if (error) {
+        const fout = registratieFout(error.code);
+
+        return {
+            status: "error",
+            veldFouten: fout.veldFouten,
+            melding: fout.melding,
+            invoer,
+        }
+    }
+
+    if (data.session) {
+        redirect("/mijn-afspraken");
+    }
     return {
-        status: "error",
-        veldFouten: {},
-        melding: "Registreren is nog niet gebouwd (stap 2).",
-        invoer,
+        status: "bevestig-email",
+        email: invoer.email
     };
 }
 

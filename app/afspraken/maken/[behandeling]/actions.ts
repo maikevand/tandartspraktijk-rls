@@ -1,6 +1,6 @@
 "use server";
 
-import {boekAfspraak, OnbekendeBehandelingError, TijdNietBeschikbaarError} from "@/lib/afspraken";
+import {boekAfspraak, OnbekendeBehandelingError, TijdNietBeschikbaarError, NietGeautoriseerd} from "@/lib/afspraken";
 import {isGeldigeAfspraakDatum} from "@/lib/datum";
 import {isGeldigEmail, leesTekst} from "@/lib/validatie";
 
@@ -76,6 +76,14 @@ export async function maakAfspraakAction(
         }
         if (error instanceof OnbekendeBehandelingError) {
             return ongeldigeKeuze;
+        }
+
+        if (error instanceof NietGeautoriseerd) {
+            return {
+                status: "error",
+                melding: error.message,
+                invoer,
+            };
         }
 
         console.error(error);

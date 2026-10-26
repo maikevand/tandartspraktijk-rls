@@ -10,6 +10,11 @@ export type Arts = {
     type: string;
 };
 
+export type Receptionist = {
+    id: number;
+    naam: string;
+};
+
 /**
  * Geeft de ingelogde arts terug, of `null` als er niemand is ingelogd.
  *
@@ -17,17 +22,26 @@ export type Arts = {
  * onderdelen van een pagina het vragen.
  */
 export const getIngelogdeArts = cache(async (): Promise<Arts | null> => {
-    // TODO stap 2: zoek uit wie er is ingelogd.
-    //  - Maak een client met createSupabaseServerClient().
-    //  - Vraag de gebruiker op uit het token van de sessie. Er zijn meerdere
-    //    functies in supabase.auth die iets over de sessie teruggeven. Kies er
-    //    één die het token écht controleert. Waarom mag je op de server
-    //    getSession() níet vertrouwen?
-    //  - Is er niemand ingelogd? Geef dan null terug.
-    //  - Zoek in de tabel `arts` de rij waarvan user_id gelijk is aan het id van
-    //    de gebruiker, en geef die terug (id, naam, type).
-    return null;
+    const supabase = await createSupabaseServerClient();
+    const {data, error} = await supabase.auth.getUser();
+
+    if (error || !data.user) {
+        return null
+    }
+
+    const artsResultaat = await supabase
+        .from("arts")
+        .select("id, naam, type")
+        .eq("user_id", data.user.id)
+        .maybeSingle()
+
+    if (artsResultaat.error || !artsResultaat.data) {
+        return null;
+    }
+
+    return artsResultaat.data;
 });
+
 
 /** Voor pagina's achter de login: stuurt door naar /inloggen als er niemand is ingelogd. */
 export async function vereisIngelogdeArts(): Promise<Arts> {
@@ -37,6 +51,26 @@ export async function vereisIngelogdeArts(): Promise<Arts> {
     }
     return arts;
 }
+
+export const getIngelogdeReceptionist = cache(async (): Promise<Receptionist | null> => {
+    const supabase = await createSupabaseServerClient();
+    const {data, error} = await supabase.auth.getUser();
+
+    if (error || !data.user) {
+        return null
+    }
+    const receptionistResultaat = await supabase
+        .from("receptionist")
+        .select("id, naam")
+        .eq("user_id", data.user.id)
+        .maybeSingle()
+
+    if (receptionistResultaat.error || !receptionistResultaat.data) {
+        return null;
+    }
+
+    return receptionistResultaat.data;
+});
 
 /** Voor /inloggen en /registreren: wie al is ingelogd, gaat direct naar zijn afspraken. */
 export async function stuurIngelogdeArtsDoor(): Promise<void> {

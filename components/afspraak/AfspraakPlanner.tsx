@@ -102,7 +102,8 @@ function Melding({resultaat}: { resultaat: AfspraakResultaat }) {
         case "success":
             return (
                 <p className="form-success">
-                    U heeft een afspraak gemaakt voor {formatDatum(resultaat.afspraak.datum)} om {resultaat.afspraak.tijd}.
+                    U heeft een afspraak gemaakt
+                    voor {formatDatum(resultaat.afspraak.datum)} om {resultaat.afspraak.tijd}.
                 </p>
             );
         case "error":
