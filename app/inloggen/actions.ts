@@ -17,18 +17,26 @@ export async function login(_vorigResultaat: LoginResultaat, formData: FormData)
         return {status: "error", melding: "Vul je e-mailadres en wachtwoord in.", email};
     }
 
-    // TODO stap 2: log de gebruiker in bij Supabase.
-    //  - Maak een client met createSupabaseServerClient(). Die zet na het inloggen
-    //    automatisch de sessie-cookies.
-    //  - Gebruik de juiste functie van supabase.auth om in te loggen met e-mail en wachtwoord.
-    //  - Gaat het mis? Geef dan een foutresultaat terug. loginFoutmelding()
-    //    hieronder vertaalt de foutcode van Supabase naar een nette Nederlandse melding.
-    //  - Gaat het goed? Stuur de gebruiker dan door naar /mijn-afspraken.
-    return {status: "error", melding: "Inloggen is nog niet gebouwd (stap 2).", email};
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+    });
+
+    if (error) {
+        return {
+            status: "error",
+            melding: loginFoutmelding(error.code),
+            email
+        };
+    }
+
+    redirect("/mijn-afspraken");
 }
 
 export async function uitloggen(): Promise<void> {
-    // TODO stap 2: log de gebruiker uit bij Supabase. Daarmee worden ook de sessie-cookies verwijderd.
+    const supabase = await createSupabaseServerClient();
+    await supabase.auth.signOut();
 
     redirect("/inloggen");
 }
